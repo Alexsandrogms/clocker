@@ -13,6 +13,7 @@ import {
   FormLabel,
   Input,
   InputGroup,
+  InputLeftAddon,
   InputLeftElement,
   Text,
 } from '@chakra-ui/react';
@@ -25,9 +26,10 @@ const validationSchema = yup.object().shape({
     .string()
     .min(8, 'A senha deve ter no minimo 8 caracteres')
     .required('Senha é obrigatória'),
+  username: yup.string().required('Username é obrigatório'),
 });
 
-export default function Home() {
+export default function SignUp() {
   const {
     values,
     handleChange,
@@ -41,7 +43,7 @@ export default function Home() {
       try {
         const user = await firebase
           .auth()
-          .signInWithEmailAndPassword(email, password);
+          .createUserWithEmailAndPassword(email, password);
 
         console.log(user);
       } catch (error) {
@@ -52,6 +54,7 @@ export default function Home() {
     initialValues: {
       email: '',
       password: '',
+      username: '',
     },
   });
 
@@ -100,6 +103,23 @@ export default function Home() {
           )}
         </FormControl>
 
+        <FormControl id="username" p={4} isRequired>
+          <InputGroup size="lg">
+            <InputLeftAddon children="clocker.work/" />
+            <Input
+              value={values.username}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+          </InputGroup>
+
+          {touched.username && (
+            <FormHelperText textColor="#FF6B6B">
+              {errors.username}
+            </FormHelperText>
+          )}
+        </FormControl>
+
         <Box w="full" p={4}>
           <Button
             type="submit"
@@ -112,7 +132,7 @@ export default function Home() {
           </Button>
         </Box>
       </form>
-      <Link href="/sign-up">Ainda não possui uma conta? Cadastra-se</Link>
+      <Link href="/sign-up">Já possui uma conta? Acessar</Link>
     </Container>
   );
 }
