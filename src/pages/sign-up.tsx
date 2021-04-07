@@ -132,7 +132,7 @@ export default function SignUp() {
           </Button>
         </Box>
       </form>
-      <Link href="/sign-up">Já possui uma conta? Acessar</Link>
+      <Link href="/">Já possui uma conta? Acessar</Link>
     </Container>
   );
 }

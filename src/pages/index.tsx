@@ -1,8 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { EmailIcon, LockIcon } from '@chakra-ui/icons';
+import firebase, { persistenceMode } from 'config/firebase';
 import {
   Box,
   Button,
@@ -16,8 +19,6 @@ import {
   Text,
 } from '@chakra-ui/react';
 
-import firebase, { persistenceMode } from 'config/firebase';
-
 const validationSchema = yup.object().shape({
   email: yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
   password: yup
@@ -27,6 +28,8 @@ const validationSchema = yup.object().shape({
 });
 
 export default function Home() {
+  const router = useRouter();
+
   const {
     values,
     handleChange,
@@ -42,8 +45,6 @@ export default function Home() {
         const user = await firebase
           .auth()
           .signInWithEmailAndPassword(email, password);
-
-        console.log(user);
       } catch (error) {
         console.log(error);
       }
@@ -54,6 +55,12 @@ export default function Home() {
       password: '',
     },
   });
+
+  useEffect(() => {
+    firebase
+      .auth()
+      .onAuthStateChanged((user) => user && router.push('/schedule'));
+  }, []);
 
   return (
     <Container p={4} centerContent>
