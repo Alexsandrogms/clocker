@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { EmailIcon, LockIcon } from '@chakra-ui/icons';
-
 import {
   Box,
   Button,
@@ -18,7 +18,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 
-import firebase from 'config/firebase';
+import { firebaseClient } from 'config/firebase/client';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
@@ -30,6 +30,8 @@ const validationSchema = yup.object().shape({
 });
 
 export default function SignUp() {
+  const router = useRouter();
+
   const {
     values,
     handleChange,
@@ -41,11 +43,11 @@ export default function SignUp() {
   } = useFormik({
     onSubmit: async ({ email, password }) => {
       try {
-        const user = await firebase
+        await firebaseClient
           .auth()
           .createUserWithEmailAndPassword(email, password);
 
-        console.log(user);
+        router.push('/');
       } catch (error) {
         console.log(error);
       }
@@ -60,7 +62,7 @@ export default function SignUp() {
 
   return (
     <Container p={4} centerContent>
-      <Image src="/logo.svg" width={290} height={80} />
+      <Image src="/images/logo.svg" width={290} height={80} />
 
       <Box p={4} mt={8}>
         <Text>Crie sua agenda compartilhada</Text>

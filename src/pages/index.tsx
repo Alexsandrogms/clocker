@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { EmailIcon, LockIcon } from '@chakra-ui/icons';
-import firebase, { persistenceMode } from 'config/firebase';
+import { firebaseClient, persistenceMode } from 'config/firebase/client';
 import {
   Box,
   Button,
@@ -40,11 +40,10 @@ export default function Home() {
     isSubmitting,
   } = useFormik({
     onSubmit: async ({ email, password }) => {
-      firebase.auth().setPersistence(persistenceMode);
+      firebaseClient.auth().setPersistence(persistenceMode);
       try {
-        const user = await firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password);
+        await firebaseClient.auth().signInWithEmailAndPassword(email, password);
+        router.push('/schedule');
       } catch (error) {
         console.log(error);
       }
@@ -57,14 +56,14 @@ export default function Home() {
   });
 
   useEffect(() => {
-    firebase
+    firebaseClient
       .auth()
       .onAuthStateChanged((user) => user && router.push('/schedule'));
   }, []);
 
   return (
     <Container p={4} centerContent>
-      <Image src="/logo.svg" width={290} height={80} />
+      <Image src="/images/logo.svg" width={290} height={80} />
 
       <Box p={4} mt={8}>
         <Text>Crie sua agenda compartilhada</Text>

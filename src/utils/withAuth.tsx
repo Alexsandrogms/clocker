@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { ElementType, useEffect, useState } from 'react';
 import { Flex, Spinner } from '@chakra-ui/react';
 
-import firebase from 'config/firebase';
+import { firebaseClient } from 'config/firebase/client';
 
 export default function withAuth(WrapperComponent: ElementType) {
   const Wrapper = (props: unknown) => {
@@ -10,7 +10,7 @@ export default function withAuth(WrapperComponent: ElementType) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-      if (!firebase.auth().currentUser) router.replace('/');
+      if (!firebaseClient.auth().currentUser) router.replace('/');
       setLoading(false);
     }, []);
 
