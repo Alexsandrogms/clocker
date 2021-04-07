@@ -3,7 +3,6 @@ import Link from 'next/link';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { EmailIcon, LockIcon } from '@chakra-ui/icons';
-
 import {
   Box,
   Button,
@@ -17,7 +16,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 
-import firebase from 'config/firebase';
+import firebase, { persistenceMode } from 'config/firebase';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
@@ -38,6 +37,7 @@ export default function Home() {
     isSubmitting,
   } = useFormik({
     onSubmit: async ({ email, password }) => {
+      firebase.auth().setPersistence(persistenceMode);
       try {
         const user = await firebase
           .auth()
