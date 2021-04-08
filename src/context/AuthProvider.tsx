@@ -1,9 +1,11 @@
-import { firebaseClient, persistenceMode } from 'config/firebase/client';
-import { useRouter } from 'next/router';
 import { createContext, ReactNode, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/router';
+
+import { firebaseClient, persistenceMode } from 'config/firebase/client';
+import { createProfile } from 'utils/fetchApi';
 
 type AuthContextProps = {
-  signIn: ({ email, password }: SignProps) => Promise<void>;
+  signIn: ({ email, password }: SignProps) => Promise<String>;
   signUp: ({ email, password }: SignProps) => Promise<void>;
   signOut: () => void;
 };
@@ -28,7 +30,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       await firebaseClient.auth().signInWithEmailAndPassword(email, password);
 
-      // router.push('/schedule');
+      return await firebaseClient.auth().currentUser.getIdToken();
     } catch (error) {
       console.log('Error_fnc_signIn: ', error);
     }
@@ -37,14 +39,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signUp = useCallback(
     async ({ email, password, username }: SignProps) => {
       try {
-        const user = await firebaseClient
+        await firebaseClient
           .auth()
           .createUserWithEmailAndPassword(email, password);
-        await signIn({ email, password });
+        const token = await signIn({ email, password });
 
-        console.log(user);
+        const data = await createProfile({
+          authentication: token,
+          username,
+        });
 
-        // createProfile()
+        console.log(data);
       } catch (error) {
         console.log('Error_fnc_signUp: ', error);
       }

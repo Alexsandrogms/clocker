@@ -7,13 +7,15 @@ export const createProfile = async ({
   authentication,
   username,
 }: CreateProfileProps) => {
-  fetch('/api/profile', {
+  const response = await fetch('/api/profile', {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Authentication: `Bearer ${authentication}`,
+      Authorization: `Bearer ${authentication}`,
     },
     method: 'POST',
     body: JSON.stringify({ username }),
   });
+
+  return await response.json();
 };
