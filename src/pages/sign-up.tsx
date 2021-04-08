@@ -1,8 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import * as yup from 'yup';
 import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { EmailIcon, LockIcon } from '@chakra-ui/icons';
 import {
   Box,
@@ -17,8 +16,7 @@ import {
   InputLeftElement,
   Text,
 } from '@chakra-ui/react';
-
-import { firebaseClient } from 'config/firebase/client';
+import useAuth from 'hooks/useAuth';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
@@ -30,7 +28,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function SignUp() {
-  const router = useRouter();
+  const { signUp } = useAuth();
 
   const {
     values,
@@ -41,17 +39,7 @@ export default function SignUp() {
     handleSubmit,
     isSubmitting,
   } = useFormik({
-    onSubmit: async ({ email, password }) => {
-      try {
-        await firebaseClient
-          .auth()
-          .createUserWithEmailAndPassword(email, password);
-
-        router.push('/');
-      } catch (error) {
-        console.log(error);
-      }
-    },
+    onSubmit: signUp,
     validationSchema,
     initialValues: {
       email: '',

@@ -1,11 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import * as yup from 'yup';
-import { useFormik } from 'formik';
+import Image from 'next/image';
 import { EmailIcon, LockIcon } from '@chakra-ui/icons';
-import { firebaseClient, persistenceMode } from 'config/firebase/client';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import {
   Box,
   Button,
@@ -19,6 +16,8 @@ import {
   Text,
 } from '@chakra-ui/react';
 
+import useAuth from 'hooks/useAuth';
+
 const validationSchema = yup.object().shape({
   email: yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
   password: yup
@@ -28,7 +27,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function Home() {
-  const router = useRouter();
+  const { signIn } = useAuth();
 
   const {
     values,
@@ -39,27 +38,13 @@ export default function Home() {
     handleSubmit,
     isSubmitting,
   } = useFormik({
-    onSubmit: async ({ email, password }) => {
-      firebaseClient.auth().setPersistence(persistenceMode);
-      try {
-        await firebaseClient.auth().signInWithEmailAndPassword(email, password);
-        router.push('/schedule');
-      } catch (error) {
-        console.log(error);
-      }
-    },
+    onSubmit: signIn,
     validationSchema,
     initialValues: {
       email: '',
       password: '',
     },
   });
-
-  useEffect(() => {
-    firebaseClient
-      .auth()
-      .onAuthStateChanged((user) => user && router.push('/schedule'));
-  }, []);
 
   return (
     <Container p={4} centerContent>
