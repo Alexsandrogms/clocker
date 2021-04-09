@@ -63,9 +63,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   useEffect(() => {
-    firebaseClient
-      .auth()
-      .onAuthStateChanged((user) => user && router.push('/calendar'));
+    if (router.pathname === '/') {
+      firebaseClient
+        .auth()
+        .onAuthStateChanged((user) => user && router.push('/calendar'));
+    }
   }, []);
 
   return (
