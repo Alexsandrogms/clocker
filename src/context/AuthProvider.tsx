@@ -2,7 +2,7 @@ import { createContext, ReactNode, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { firebaseClient, persistenceMode } from 'config/firebase/client';
-import createProfile from 'utils/createProfile';
+import { createProfile } from 'hooks/useFetch';
 
 type AuthContextProps = {
   signIn: ({ email, password }: SignProps) => Promise<String>;

@@ -4,11 +4,11 @@ import { addDays, subDays } from 'date-fns';
 
 import { Box, Button, Container, Flex, IconButton } from '@chakra-ui/react';
 
-import { Header, Logo } from 'components';
 import useAuth from 'hooks/useAuth';
-import { formatDate } from 'utils/utilityFunctions';
 import withAuth from 'utils/withAuth';
-import { getCalendar } from 'utils/getCalendar';
+import { Header, Logo } from 'components';
+import { getCalendar } from 'hooks/useFetch';
+import { formatDate } from 'utils/utilityFunctions';
 
 function Calendar() {
   const [when, setWhen] = useState(new Date());
