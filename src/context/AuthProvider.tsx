@@ -2,7 +2,7 @@ import { createContext, ReactNode, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { firebaseClient, persistenceMode } from 'config/firebase/client';
-import { createProfile } from 'utils/fetchApi';
+import createProfile from 'utils/createProfile';
 
 type AuthContextProps = {
   signIn: ({ email, password }: SignProps) => Promise<String>;
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     firebaseClient
       .auth()
-      .onAuthStateChanged((user) => user && router.push('/schedule'));
+      .onAuthStateChanged((user) => user && router.push('/calendar'));
   }, []);
 
   return (

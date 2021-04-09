@@ -1,21 +1,23 @@
+import axios from 'axios';
+
 interface CreateProfileProps {
   authentication: string;
   username: string;
 }
 
-export const createProfile = async ({
+const createProfile = async ({
   authentication,
   username,
 }: CreateProfileProps) => {
-  const response = await fetch('/api/profile', {
+  const { data } = await axios({
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
       Authorization: `Bearer ${authentication}`,
     },
     method: 'POST',
-    body: JSON.stringify({ username }),
+    data: { username },
   });
 
-  return await response.json();
+  return data;
 };
+
+export default createProfile;
