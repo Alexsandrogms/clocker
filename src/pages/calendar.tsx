@@ -19,7 +19,11 @@ function Calendar() {
 
   useEffect(() => {
     (async () => {
-      await getCalendar({ token: '', when });
+      try {
+        await getCalendar({ token: '', when });
+      } catch (error) {
+        console.log('Error_fnc_getCalendar: ', error);
+      }
     })();
   }, [when]);
 

@@ -1,12 +1,13 @@
-import useSWR from 'swr';
 import axios from 'axios';
+import { getIdToken } from 'config/firebase/client';
 
 type CalendarProps = {
   token: string;
   when: Date;
 };
 
-export const getCalendar = async ({ token, when }: CalendarProps) => {
+export const getCalendar = async ({ when }: CalendarProps) => {
+  const token = await getIdToken();
   const { data } = await axios({
     method: 'get',
     url: '/api/calendar',
