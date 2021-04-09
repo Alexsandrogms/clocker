@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -17,6 +16,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import useAuth from 'hooks/useAuth';
+import { Logo } from 'components';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
@@ -50,7 +50,7 @@ export default function SignUp() {
 
   return (
     <Container p={4} centerContent>
-      <Image src="/images/logo.svg" width={290} height={80} />
+      <Logo size={280} />
 
       <Box p={4} mt={8}>
         <Text>Crie sua agenda compartilhada</Text>

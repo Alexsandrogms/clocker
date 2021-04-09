@@ -1,25 +1,5 @@
 import axios from 'axios';
-import { getIdToken } from 'config/firebase/client';
-
-interface CreateProfileProps {
-  authentication: string;
-  username: string;
-}
-
-const createProfile = async ({
-  authentication,
-  username,
-}: CreateProfileProps) => {
-  const { data } = await axios({
-    headers: {
-      Authorization: `Bearer ${authentication}`,
-    },
-    method: 'POST',
-    data: { username },
-  });
-
-  return data;
-};
+import { getToken } from 'config/firebase/client';
 
 type CalendarProps = {
   token: string;
@@ -27,7 +7,8 @@ type CalendarProps = {
 };
 
 const getCalendar = async ({ when }: CalendarProps) => {
-  const token = await getIdToken();
+  const token = await getToken();
+
   const { data } = await axios({
     method: 'get',
     url: '/api/calendar',
@@ -50,4 +31,42 @@ const getSchedule = async (when: Date) => {
   return data;
 };
 
-export { createProfile, getCalendar, getSchedule };
+interface CreateProfileProps {
+  authentication: string;
+  username: string;
+}
+
+const createProfile = async ({
+  authentication,
+  username,
+}: CreateProfileProps) => {
+  const { data } = await axios({
+    headers: {
+      Authorization: `Bearer ${authentication}`,
+    },
+    url: '/api/profile',
+    method: 'POST',
+    data: { username },
+  });
+
+  return data;
+};
+
+type ScheduleProps = {
+  when: string;
+  username: string;
+  name: string;
+  phone: string;
+};
+
+const createSchedule = async (data: ScheduleProps) => {
+  const response = await axios({
+    method: 'POST',
+    url: '/api/schedule',
+    data,
+  });
+
+  return response.data;
+};
+
+export { getCalendar, getSchedule, createProfile, createSchedule };

@@ -44,12 +44,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           .createUserWithEmailAndPassword(email, password);
         const token = await signIn({ email, password });
 
-        const data = await createProfile({
+        await createProfile({
           authentication: token,
           username,
         });
 
-        console.log(data);
+        router.push('/');
       } catch (error) {
         console.log('Error_fnc_signUp: ', error);
       }

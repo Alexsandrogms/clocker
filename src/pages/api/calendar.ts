@@ -27,9 +27,9 @@ export default async (req: CustomNextApiRequest, res: NextApiResponse) => {
       .where('when', '==', when)
       .get();
 
-    return res.json(snapshot.docs);
+    return res.status(200).json(snapshot.docs);
   } catch (error) {
-    console.log('FB_ERROR: ', error);
+    console.log('FB_ERROR_CALENDAR: ', error);
     return res.status(401);
   }
 };

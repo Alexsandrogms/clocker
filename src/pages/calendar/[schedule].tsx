@@ -74,7 +74,11 @@ function Schedule() {
         )}
 
         {times?.map((time, idx) => (
-          <TimeBlock key={idx.toString()} time={time} />
+          <TimeBlock
+            key={idx.toString()}
+            time={time}
+            username={schedule as string}
+          />
         ))}
       </SimpleGrid>
     </Container>
