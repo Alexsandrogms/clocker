@@ -77,6 +77,7 @@ function Schedule() {
           <TimeBlock
             key={idx.toString()}
             time={time}
+            date={when}
             username={schedule as string}
           />
         ))}

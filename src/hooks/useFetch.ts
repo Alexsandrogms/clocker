@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getToken } from 'config/firebase/client';
+import { format } from 'date-fns';
 
 type CalendarProps = {
   token: string;
@@ -53,17 +54,21 @@ const createProfile = async ({
 };
 
 type ScheduleProps = {
-  when: string;
+  time: string;
+  date: Date;
   username: string;
   name: string;
   phone: string;
 };
 
-const createSchedule = async (data: ScheduleProps) => {
+const createSchedule = async ({ date, ...data }: ScheduleProps) => {
   const response = await axios({
     method: 'POST',
     url: '/api/schedule',
-    data,
+    data: {
+      ...data,
+      date: format(date, 'yyyy-MM-dd'),
+    },
   });
 
   return response.data;

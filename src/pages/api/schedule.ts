@@ -28,6 +28,8 @@ interface CustomNextApiRequest extends NextApiRequest {
     username: string;
     name: string;
     phone: string;
+    time: string;
+    date: Date;
   };
 }
 
@@ -58,20 +60,22 @@ const getSchedule = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const setSchedule = async (req: CustomNextApiRequest, res: NextApiResponse) => {
-  const { username, when, name, phone } = req.body;
+  const { username, name, phone, date, time } = req.body;
 
   try {
     const userId = await getUserId(username);
+    const docId = `${userId}#${date}#${time}`;
 
-    const doc = await calendar.doc(`${userId}#${when}`).get();
+    const doc = await calendar.doc(docId).get();
 
     if (doc.exists) {
       return res.status(400).end();
     }
 
-    const block = await calendar.doc(`${userId}#${when}`).set({
+    const block = await calendar.doc(docId).set({
       userId,
-      when,
+      date,
+      time,
       name,
       phone,
     });

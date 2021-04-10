@@ -62,10 +62,11 @@ const ModalTimeBlock = ({
 
 interface TimeBlockProps {
   time: string;
+  date: Date;
   username: string;
 }
 
-const TimeBlock = ({ time, username }: TimeBlockProps) => {
+const TimeBlock = ({ time, date, username }: TimeBlockProps) => {
   const { notification } = useContext(AuthContext);
 
   const [isOpen, setOpen] = useState(false);
@@ -82,7 +83,7 @@ const TimeBlock = ({ time, username }: TimeBlockProps) => {
   } = useFormik({
     onSubmit: async ({ name, phone }) => {
       try {
-        await createSchedule({ name, phone, username, when: time });
+        await createSchedule({ name, phone, username, time, date });
         notification({
           status: 'success',
           title: 'Horário reservado!',
