@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { addDays, subDays } from 'date-fns';
 
-import { Box, Button, Container, Flex, IconButton } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, IconButton, Spinner } from '@chakra-ui/react';
 
 import useAuth from 'hooks/useAuth';
 import withAuth from 'utils/withAuth';
@@ -12,19 +12,23 @@ import { formatDate } from 'utils/utilityFunctions';
 
 function Calendar() {
   const [when, setWhen] = useState(new Date());
+  const [loading, setLoading] = useState(false);
+
   const { signOut } = useAuth();
 
   const nextDate = () => setWhen((prevState) => addDays(prevState, 1));
   const prevDate = () => setWhen((prevState) => subDays(prevState, 1));
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       try {
-        await getCalendar({ token: '', when });
+        await getCalendar({ when });
       } catch (error) {
         console.log('Error_fnc_getCalendar: ', error);
       }
     })();
+    setLoading(true);
   }, [when]);
 
   return (
@@ -50,6 +54,17 @@ function Calendar() {
           onClick={nextDate}
         />
       </Flex>
+      <Box>
+        {loading && (
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="blue.500"
+            size="xl"
+          />
+        )}
+      </Box>
     </Container>
   );
 }

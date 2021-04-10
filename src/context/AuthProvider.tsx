@@ -13,6 +13,10 @@ import { createProfile } from 'hooks/useFetch';
 type AuthContextProps = {
   isToast: boolean;
   toast: ToastProps;
+  auth: {
+    loading: boolean;
+    user: any;
+  };
   signIn: ({ email, password }: SignProps) => Promise<String>;
   signUp: ({ email, password }: SignProps) => Promise<void>;
   signOut: () => void;
@@ -40,6 +44,10 @@ type ToastProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter();
+  const [auth, setAuth] = useState({
+    loading: true,
+    user: null,
+  });
   const [isToast, setIsToast] = useState(false);
   const [toast, setToast] = useState({
     title: 'OOPS! algo deu errado.',
@@ -92,16 +100,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const removeNotification = () => setIsToast(false);
 
   useEffect(() => {
-    if (router.pathname === '/') {
-      firebaseClient
-        .auth()
-        .onAuthStateChanged((user) => user && router.push('/calendar'));
+    const unsubscribe = firebaseClient.auth().onAuthStateChanged((user) => {
+      setAuth({
+        loading: false,
+        user,
+      });
+    });
+
+    if (router.route === '/sign-in' && auth.user) {
+      router.push('/calendar');
     }
+
+    return () => unsubscribe();
   }, []);
 
   return (
     <AuthContext.Provider
       value={{
+        auth,
         isToast,
         toast,
         signIn,

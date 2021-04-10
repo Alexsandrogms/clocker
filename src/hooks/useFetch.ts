@@ -3,23 +3,26 @@ import { getToken } from 'config/firebase/client';
 import { format } from 'date-fns';
 
 type CalendarProps = {
-  token: string;
   when: Date;
 };
 
 const getCalendar = async ({ when }: CalendarProps) => {
-  const token = await getToken();
+  try {
+    const token = await getToken();
 
-  const { data } = await axios({
-    method: 'get',
-    url: '/api/calendar',
-    params: { when },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    const { data } = await axios({
+      method: 'get',
+      url: '/api/calendar',
+      params: { date: format(when, 'yyyy-MM-dd') },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  return data;
+    return data;
+  } catch (error) {
+    console.log('useFetch_fnc_getCalendar: ', error);
+  }
 };
 
 const getSchedule = async (date: Date, username: string) => {

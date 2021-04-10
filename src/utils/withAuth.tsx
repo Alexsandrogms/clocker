@@ -1,20 +1,20 @@
 import { useRouter } from 'next/router';
-import { ElementType, useEffect, useState } from 'react';
+import { ElementType, useContext, useEffect } from 'react';
 import { Flex, Spinner } from '@chakra-ui/react';
 
 import { firebaseClient } from 'config/firebase/client';
+import { AuthContext } from 'context/AuthProvider';
 
 export default function withAuth(WrapperComponent: ElementType) {
   const Wrapper = (props: unknown) => {
     const router = useRouter();
-    const [loading, setLoading] = useState(true);
+    const { auth } = useContext(AuthContext);
 
     useEffect(() => {
-      if (!firebaseClient.auth().currentUser) router.replace('/');
-      setLoading(false);
-    }, []);
+      !auth.user && router.push('/');
+    }, [auth.user]);
 
-    if (loading) {
+    if (auth.loading) {
       return (
         <Flex w="100vw" h="100vh" justify="center" align="center">
           <Spinner size="xl" />

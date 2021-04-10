@@ -93,8 +93,6 @@ const TimeBlock = ({ time, date, username, unavailable }: TimeBlockProps) => {
         });
         toggle();
       } catch (error) {
-        console.log('entrou: ', error);
-
         notification();
       }
     },
