@@ -18,7 +18,7 @@ import { createSchedule } from 'hooks/useFetch';
 
 import Input from '../Input';
 import { AuthContext } from 'context/AuthProvider';
-interface ModalTimeBlockProps {
+interface ModalScheduleItemProps {
   children: ReactNode;
   isOpen: boolean;
   isSubmitting?: boolean;
@@ -26,13 +26,13 @@ interface ModalTimeBlockProps {
   onComplete: () => void;
 }
 
-const ModalTimeBlock = ({
+const ModalScheduleItem = ({
   isOpen,
   onClose,
   children,
   onComplete,
   isSubmitting,
-}: ModalTimeBlockProps) => (
+}: ModalScheduleItemProps) => (
   <Modal isOpen={isOpen} onClose={onClose}>
     <ModalOverlay />
     <ModalContent>
@@ -60,14 +60,21 @@ const ModalTimeBlock = ({
   </Modal>
 );
 
-interface TimeBlockProps {
+interface ScheduleItemProps {
   time: string;
   date: Date;
   username: string;
   unavailable: boolean;
+  onRefresh: () => void;
 }
 
-const TimeBlock = ({ time, date, username, unavailable }: TimeBlockProps) => {
+const ScheduleItem = ({
+  time,
+  date,
+  username,
+  unavailable,
+  onRefresh,
+}: ScheduleItemProps) => {
   const { notification } = useContext(AuthContext);
 
   const [isOpen, setOpen] = useState(false);
@@ -92,6 +99,7 @@ const TimeBlock = ({ time, date, username, unavailable }: TimeBlockProps) => {
           description: `Temos um horário marcado para ${time}`,
         });
         toggle();
+        onRefresh();
       } catch (error) {
         notification();
       }
@@ -127,7 +135,7 @@ const TimeBlock = ({ time, date, username, unavailable }: TimeBlockProps) => {
     >
       {time}
       {!unavailable && (
-        <ModalTimeBlock
+        <ModalScheduleItem
           isOpen={isOpen}
           onClose={toggle}
           onComplete={handleSubmit}
@@ -161,10 +169,10 @@ const TimeBlock = ({ time, date, username, unavailable }: TimeBlockProps) => {
               touched={touched.phone}
             />
           </Stack>
-        </ModalTimeBlock>
+        </ModalScheduleItem>
       )}
     </Button>
   );
 };
 
-export default TimeBlock;
+export default ScheduleItem;

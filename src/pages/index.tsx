@@ -9,10 +9,10 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!auth.loading) {
-      auth.user ? router.push('/calendar') : router.push('/sign-in');
+    if (!auth?.loading) {
+      auth?.user ? router.push('/calendar') : router.push('/sign-in');
     }
-  }, [auth.user]);
+  }, [auth]);
 
   return (
     <Flex w="100vw" h="100vh" justify="center" align="center">
