@@ -38,11 +38,6 @@ export default async (req: CustomNextApiRequest, res: NextApiResponse) => {
       return res.status(404).json({ error: 'username not exists!' });
     }
 
-    const snapshot = await calendar
-      .where('userId', '==', user_id)
-      .where('date', '==', date)
-      .get();
-
     const { docs } = await calendar
       .where('userId', '==', user_id)
       .where('date', '==', date)
@@ -53,6 +48,8 @@ export default async (req: CustomNextApiRequest, res: NextApiResponse) => {
     const schedules = schedulesAvailable.map((time) => ({
       time,
       unavailable: !!schedulesUnavailable.find((t) => t.time === time),
+      name: schedulesUnavailable.find((t) => t.time === time)?.name,
+      phone: schedulesUnavailable.find((t) => t.time === time)?.phone,
     }));
 
     return res.status(200).json(schedules);

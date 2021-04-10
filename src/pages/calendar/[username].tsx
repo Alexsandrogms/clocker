@@ -12,7 +12,7 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 
-import { Header, Logo, TimeBlock } from 'components';
+import { Header, Logo, ScheduleItem } from 'components';
 import { getSchedule } from 'hooks/useFetch';
 import { formatDate } from 'utils/utilityFunctions';
 
@@ -31,24 +31,25 @@ function Schedule() {
 
   const nextDate = () => setWhen((prevState) => addDays(prevState, 1));
   const prevDate = () => setWhen((prevState) => subDays(prevState, 1));
+  const onRefresh = async () => {
+    setLoading(true);
+    try {
+      if (username) {
+        const response = await getSchedule(when, username as string);
+        setTimes(response);
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        router.replace('/');
+      }
+
+      console.log('Error_fnc_getSchedule: ', error);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        if (username) {
-          const response = await getSchedule(when, username as string);
-          setTimes(response);
-        }
-      } catch (error) {
-        if (error.response && error.response.status === 404) {
-          router.replace('/');
-        }
-
-        console.log('Error_fnc_getSchedule: ', error);
-      }
-      setLoading(false);
-    })();
+    onRefresh();
   }, [when, username]);
 
   return (
@@ -75,22 +76,35 @@ function Schedule() {
       </Flex>
       <SimpleGrid p={4} columns={2} spacing={4}>
         {loading && (
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="blue.500"
-            size="xl"
-          />
+          <Flex
+            justify="center"
+            align="center"
+            position="fixed"
+            left={0}
+            top={0}
+            right={0}
+            bottom={0}
+            bg="transparent"
+            zIndex={2}
+          >
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="blue.200"
+              color="gray.500"
+              size="xl"
+            />
+          </Flex>
         )}
 
         {times?.map(({ time, unavailable }, idx) => (
-          <TimeBlock
+          <ScheduleItem
             key={idx.toString()}
             time={time}
             date={when}
             username={username as string}
             unavailable={unavailable}
+            onRefresh={onRefresh}
           />
         ))}
       </SimpleGrid>
