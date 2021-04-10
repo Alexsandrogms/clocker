@@ -64,9 +64,10 @@ interface TimeBlockProps {
   time: string;
   date: Date;
   username: string;
+  unavailable: boolean;
 }
 
-const TimeBlock = ({ time, date, username }: TimeBlockProps) => {
+const TimeBlock = ({ time, date, username, unavailable }: TimeBlockProps) => {
   const { notification } = useContext(AuthContext);
 
   const [isOpen, setOpen] = useState(false);
@@ -106,44 +107,56 @@ const TimeBlock = ({ time, date, username }: TimeBlockProps) => {
     }),
   });
 
-  return (
-    <Button p={8} bg="blue.500" color="white" onClick={toggle}>
-      {time}
-      <ModalTimeBlock
-        isOpen={isOpen}
-        onClose={toggle}
-        onComplete={handleSubmit}
-        isSubmitting={isSubmitting}
-      >
-        <Stack spacing={4}>
-          <Input
-            icon
-            label="Nome"
-            iconName="name"
-            name="name"
-            value={values.name}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            placeholder="Informe seu nome"
-            error={errors.name}
-            touched={touched.name}
-          />
+  console.table([time, unavailable]);
+  
 
-          <Input
-            icon
-            label="Telefone"
-            iconName="phone"
-            type="tel"
-            name="phone"
-            placeholder="(99) 9 9999-9999"
-            value={values.phone}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={errors.phone}
-            touched={touched.phone}
-          />
-        </Stack>
-      </ModalTimeBlock>
+  return (
+    <Button
+      p={8}
+      bg="blue.500"
+      color="white"
+      onClick={toggle}
+      isDisabled={unavailable}
+      _hover={{ bg: !unavailable && 'transparent' }}
+    >
+      {time}
+      {!unavailable && (
+        <ModalTimeBlock
+          isOpen={isOpen}
+          onClose={toggle}
+          onComplete={handleSubmit}
+          isSubmitting={isSubmitting}
+        >
+          <Stack spacing={4}>
+            <Input
+              icon
+              label="Nome"
+              iconName="name"
+              name="name"
+              value={values.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Informe seu nome"
+              error={errors.name}
+              touched={touched.name}
+            />
+
+            <Input
+              icon
+              label="Telefone"
+              iconName="phone"
+              type="tel"
+              name="phone"
+              placeholder="(99) 9 9999-9999"
+              value={values.phone}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.phone}
+              touched={touched.phone}
+            />
+          </Stack>
+        </ModalTimeBlock>
+      )}
     </Button>
   );
 };

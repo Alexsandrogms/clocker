@@ -22,11 +22,14 @@ const getCalendar = async ({ when }: CalendarProps) => {
   return data;
 };
 
-const getSchedule = async (when: Date) => {
+const getSchedule = async (date: Date, username: string) => {
   const { data } = await axios({
     method: 'get',
     url: '/api/schedule',
-    params: { when },
+    params: {
+      username,
+      date: format(date, 'yyyy-MM-dd'),
+    },
   });
 
   return data;

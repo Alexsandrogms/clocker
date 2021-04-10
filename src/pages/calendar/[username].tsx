@@ -16,13 +16,18 @@ import { Header, Logo, TimeBlock } from 'components';
 import { getSchedule } from 'hooks/useFetch';
 import { formatDate } from 'utils/utilityFunctions';
 
+type TimesData = {
+  time: string;
+  unavailable: boolean;
+};
+
 function Schedule() {
   const router = useRouter();
-  const { schedule } = router.query;
+  const { username } = router.query;
 
   const [when, setWhen] = useState(new Date());
   const [loading, setLoading] = useState(false);
-  const [times, setTimes] = useState([]);
+  const [times, setTimes] = useState<TimesData[]>([]);
 
   const nextDate = () => setWhen((prevState) => addDays(prevState, 1));
   const prevDate = () => setWhen((prevState) => subDays(prevState, 1));
@@ -31,14 +36,20 @@ function Schedule() {
     (async () => {
       setLoading(true);
       try {
-        const response = await getSchedule(when);
-        setTimes(response);
+        if (username) {
+          const response = await getSchedule(when, username as string);
+          setTimes(response);
+        }
       } catch (error) {
+        if (error.response && error.response.status === 404) {
+          router.replace('/');
+        }
+
         console.log('Error_fnc_getSchedule: ', error);
       }
       setLoading(false);
     })();
-  }, [when]);
+  }, [when, username]);
 
   return (
     <Container>
@@ -73,12 +84,13 @@ function Schedule() {
           />
         )}
 
-        {times?.map((time, idx) => (
+        {times?.map(({ time, unavailable }, idx) => (
           <TimeBlock
             key={idx.toString()}
             time={time}
             date={when}
-            username={schedule as string}
+            username={username as string}
+            unavailable={unavailable}
           />
         ))}
       </SimpleGrid>
