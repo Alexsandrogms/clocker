@@ -39,8 +39,8 @@ const getUserId = async (username: string) => {
   return userId;
 };
 
-const getSchedule = async (req: CustomNextApiRequest, res: NextApiResponse) => {
-  const { when, username } = req.query;
+const getSchedule = async (req: NextApiRequest, res: NextApiResponse) => {
+  // const { when, username } = req.query;
 
   try {
     // const profileDoc = await profile.where('username', '==', username).get();
@@ -66,43 +66,26 @@ const setSchedule = async (req: CustomNextApiRequest, res: NextApiResponse) => {
     const doc = await calendar.doc(`${userId}#${when}`).get();
 
     if (doc.exists) {
-      return res.status(400);
+      return res.status(400).end();
     }
 
-    await calendar.doc(`${userId}#${when}`).set({
+    const block = await calendar.doc(`${userId}#${when}`).set({
       userId,
       when,
       name,
       phone,
     });
 
-    return res.status(201);
+    return res.status(201).json(block);
   } catch (error) {
     console.log('Error_fnc_setSchedule: ', error);
   }
 };
 
 const methods = {
-  GET: getSchedule,
   POST: setSchedule,
+  GET: getSchedule,
 };
 
 export default async (req: NextApiRequest, res: NextApiResponse) =>
-  methods[req.method](req, res)
-    ? methods[req.method](req, res)
-    : res.status(405);
-// {
-//   const {
-//     query: { when, username },
-//     method,
-//   } = req;
-
-//   if (method === 'POST') {
-//     console.log('post');
-//   } else if (method === 'GET') {
-//     console.log('get');
-//   } else {
-//     return res.status(405);
-//   }
-
-// };
+  methods[req.method] ? methods[req.method](req, res) : res.status(405);

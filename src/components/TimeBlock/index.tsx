@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useContext } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
@@ -14,12 +14,14 @@ import {
   Stack,
 } from '@chakra-ui/react';
 
-import Input from '../Input';
 import { createSchedule } from 'hooks/useFetch';
 
+import Input from '../Input';
+import { AuthContext } from 'context/AuthProvider';
 interface ModalTimeBlockProps {
   children: ReactNode;
   isOpen: boolean;
+  isSubmitting?: boolean;
   onClose: () => void;
   onComplete: () => void;
 }
@@ -29,6 +31,7 @@ const ModalTimeBlock = ({
   onClose,
   children,
   onComplete,
+  isSubmitting,
 }: ModalTimeBlockProps) => (
   <Modal isOpen={isOpen} onClose={onClose}>
     <ModalOverlay />
@@ -38,10 +41,18 @@ const ModalTimeBlock = ({
       <ModalBody>{children}</ModalBody>
 
       <ModalFooter>
-        <Button variant="ghost" onClick={onClose} mr={4}>
-          Cancelar
-        </Button>
-        <Button colorScheme="blue" mr={3} onClick={onComplete}>
+        {!isSubmitting && (
+          <Button variant="ghost" onClick={onClose} mr={4}>
+            Cancelar
+          </Button>
+        )}
+        <Button
+          colorScheme="blue"
+          mr={3}
+          onClick={onComplete}
+          isLoading={isSubmitting}
+          disabled={isSubmitting}
+        >
           Reservar horário
         </Button>
       </ModalFooter>
@@ -55,8 +66,9 @@ interface TimeBlockProps {
 }
 
 const TimeBlock = ({ time, username }: TimeBlockProps) => {
-  const [isOpen, setOpen] = useState(false);
+  const { notification } = useContext(AuthContext);
 
+  const [isOpen, setOpen] = useState(false);
   const toggle = () => setOpen((prevState) => !prevState);
 
   const {
@@ -66,9 +78,23 @@ const TimeBlock = ({ time, username }: TimeBlockProps) => {
     handleBlur,
     errors,
     touched,
+    isSubmitting,
   } = useFormik({
-    onSubmit: ({ name, phone }) =>
-      createSchedule({ name, phone, username, when: time }),
+    onSubmit: async ({ name, phone }) => {
+      try {
+        await createSchedule({ name, phone, username, when: time });
+        notification({
+          status: 'success',
+          title: 'Horário reservado!',
+          description: `Temos um horário marcado para ${time}`,
+        });
+        toggle();
+      } catch (error) {
+        console.log('entrou: ', error);
+
+        notification();
+      }
+    },
     initialValues: {
       name: '',
       phone: '',
@@ -82,11 +108,11 @@ const TimeBlock = ({ time, username }: TimeBlockProps) => {
   return (
     <Button p={8} bg="blue.500" color="white" onClick={toggle}>
       {time}
-
       <ModalTimeBlock
         isOpen={isOpen}
         onClose={toggle}
         onComplete={handleSubmit}
+        isSubmitting={isSubmitting}
       >
         <Stack spacing={4}>
           <Input
