@@ -12,9 +12,9 @@ export default function withAuth(WrapperComponent: ElementType) {
 
     useEffect(() => {
       !auth.user && router.push('/');
-    }, [auth.user]);
+    }, [auth]);
 
-    if (auth.loading) {
+    if (auth?.loading) {
       return (
         <Flex w="100vw" h="100vh" justify="center" align="center">
           <Spinner size="xl" />
