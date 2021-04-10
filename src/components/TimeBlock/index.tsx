@@ -1,4 +1,4 @@
-import { ReactNode, useState, useContext } from 'react';
+import { ReactNode, useState, useContext, FormEvent } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
@@ -81,6 +81,7 @@ const TimeBlock = ({ time, date, username, unavailable }: TimeBlockProps) => {
     errors,
     touched,
     isSubmitting,
+    setFieldValue,
   } = useFormik({
     onSubmit: async ({ name, phone }) => {
       try {
@@ -107,8 +108,15 @@ const TimeBlock = ({ time, date, username, unavailable }: TimeBlockProps) => {
     }),
   });
 
-  console.table([time, unavailable]);
-  
+  const handleInputMask = (e: FormEvent<HTMLInputElement>) => {
+    e.currentTarget.maxLength = 15;
+    let { value } = e.currentTarget;
+    value = value.replace(/\D/g, '');
+    value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+    value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+
+    setFieldValue('phone', value);
+  };
 
   return (
     <Button
@@ -149,7 +157,7 @@ const TimeBlock = ({ time, date, username, unavailable }: TimeBlockProps) => {
               name="phone"
               placeholder="(99) 9 9999-9999"
               value={values.phone}
-              onChange={handleChange}
+              onChange={handleInputMask}
               onBlur={handleBlur}
               error={errors.phone}
               touched={touched.phone}
